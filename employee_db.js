@@ -94,9 +94,9 @@ var connection = mysql.createConnection({
             updateEmp();
             break;
         
-        // case "Update employee manager":
-
-        //     break;
+        case "Update employee manager":
+          updateMan();
+            break;
         }
         })
       
@@ -214,11 +214,39 @@ async function updateEmp(){
         message: "Which employee would you like to update?"
       },
       {
-        name: "updated",
+        name: "update",
         message: "Update employee role."
       }
   ])
-  console.log(employeeDisplay)
-  await connection.query(`UPDATE employee SET title = ${update} WHERE id = 1`)
+  var upd = `UPDATE employee SET title = "${update}" WHERE id = 1`;
+  await connection.query(upd)
   console.log('updated' + update)
+
+  setTimeout(() => runSearch(), 1000);
+    
   };
+
+
+  async function updateMan(){
+    const employee = await connection.query("SELECT * FROM employee")
+    const employeeDisplay = employee.map(a=> a.id + " " +a.first_name + ' ' + a.last_name + ' | ' + a.title + ' | ' + a.manager)
+    const {update} = await inquirer.prompt([
+        {
+          name: "employee",
+          type: "list",
+          choices: employeeDisplay,
+          message: "Which employee would you like to update?"
+        },
+        {
+          name: "update",
+          message: "Update employee manager."
+        }
+    ])
+    var upd = `UPDATE employee SET manager = "${update}" WHERE id = 1`;
+    await connection.query(upd)
+    console.log('updated' + update)
+  
+    setTimeout(() => runSearch(), 1000);
+      
+    };
+
